@@ -4,6 +4,9 @@ import docsRoute from './swagger.route';
 import userRoute from './user.route';
 import uploadRoute from './upload.route';
 import taskRoute from './task.route';
+import projectRoute from './project.route';
+import labelRoute from './label.route';
+import tagRoute from './tag.route';
 
 const router = express.Router();
 
@@ -32,6 +35,18 @@ const defaultIRoute: IRoute[] = [
   {
     path: '/tasks',
     route: taskRoute,
+  },
+  {
+    path: '/projects',
+    route: projectRoute,
+  },
+  {
+    path: '/labels',
+    route: labelRoute,
+  },
+  {
+    path: '/tags',
+    route: tagRoute,
   },
 ];
 

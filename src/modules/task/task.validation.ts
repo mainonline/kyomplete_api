@@ -43,12 +43,12 @@ export const getTasks = {
     completed: Joi.boolean(),
     hidden: Joi.boolean(),
     archived: Joi.boolean(),
-    members: Joi.array().items(Joi.string().custom(objectId)),
-    parentTasks: Joi.array().items(Joi.string().custom(objectId)),
-    subTasks: Joi.array().items(Joi.string().custom(objectId)),
+    member: Joi.array().items(Joi.string().custom(objectId)),
+    parentTask: Joi.array().items(Joi.string().custom(objectId)),
+    subTask: Joi.array().items(Joi.string().custom(objectId)),
     tags: Joi.array().items(Joi.string().custom(objectId)),
-    labels: Joi.array().items(Joi.string().custom(objectId)),
-    projects: Joi.array().items(Joi.string().custom(objectId)),
+    label: Joi.array().items(Joi.string().custom(objectId)),
+    project: Joi.array().items(Joi.string().custom(objectId)),
   }),
 };
 
@@ -64,12 +64,41 @@ export const deleteTask = {
   }),
 };
 
+export const reorderTasks = {
+  query: Joi.object().keys({
+    id: Joi.string().custom(objectId),
+    order: Joi.number().integer(),
+  }),
+};
+
 export const updateTask = {
   body: Joi.object().keys({
     id: Joi.string().custom(objectId),
-    name: Joi.string(),
-    country: Joi.string().custom(objectId),
-    latitude: Joi.number(),
-    longitude: Joi.number(),
+    title: Joi.string().required(),
+    description: Joi.string().allow(''),
+    banner: Joi.object().keys({
+      id: Joi.string(),
+      url: Joi.string(),
+    }),
+    attachments: Joi.array().items(
+      Joi.object().keys({
+        id: Joi.string(),
+        url: Joi.string(),
+        title: Joi.string(),
+      })
+    ),
+    dueDate: Joi.date(),
+    reminderDate: Joi.date(),
+    priority: Joi.string().allow(''),
+    completed: Joi.boolean(),
+    hidden: Joi.boolean(),
+    archived: Joi.boolean(),
+    owner: Joi.string().custom(objectId),
+    members: Joi.array().items(Joi.string().custom(objectId)),
+    parentTasks: Joi.array().items(Joi.string().custom(objectId)),
+    subTasks: Joi.array().items(Joi.string().custom(objectId)),
+    tags: Joi.array().items(Joi.string().custom(objectId)),
+    labels: Joi.array().items(Joi.string().custom(objectId)),
+    projects: Joi.array().items(Joi.string().custom(objectId)),
   }),
 };

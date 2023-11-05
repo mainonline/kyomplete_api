@@ -16,6 +16,9 @@ router
   .get(auth(), validate(taskValidation.getTask), taskController.getTask)
   .delete(auth(), validate(taskValidation.deleteTask), taskController.deleteTask);
 
+router.route('/:id/complete').patch(auth(), validate(taskValidation.deleteTask), taskController.completeTask);
 router.route('/:id/archive').patch(auth(), validate(taskValidation.deleteTask), taskController.archiveTask);
+router.route('/:id/clone').post(auth(), validate(taskValidation.deleteTask), taskController.cloneTask);
+router.route('/reorder').patch(auth(), validate(taskValidation.reorderTasks), taskController.reorderTasks);
 
 export default router;

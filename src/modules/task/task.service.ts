@@ -113,3 +113,92 @@ export const updateTaskById = async (
 
   return task.updateOne(taskBody);
 };
+
+/**
+ * Complete task by id
+ * @param {mongoose.Types.ObjectId} id
+ * @param {mongoose.Types.ObjectId} userId
+ * @returns {Promise<ITask | null>}
+ */
+
+export const completeTaskById = async (
+  id: mongoose.Types.ObjectId,
+  userId: mongoose.Types.ObjectId
+): Promise<ITask | null> => {
+  const task = await Task.findById(id);
+  if (!task) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
+  }
+
+  // check if the user is the owner of the task or a member of the task
+  if (!task.user.equals(userId) && !task.members.includes(userId)) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "You don't have permission to complete this task");
+  }
+
+  await task.updateOne({ completed: true });
+  await task.save();
+  return task;
+};
+
+/**
+ * Clone task by id
+ * @param {mongoose.Types.ObjectId} id
+ * @returns {Promise<ITask | null>}
+ */
+export const cloneTaskById = async (id: mongoose.Types.ObjectId): Promise<ITask | null> => {
+  const task = await Task.findById(id);
+
+  if (!task) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
+  }
+
+  // Clone all properties of the task except for the id
+  const newTaskData = { ...task.toObject() };
+  delete newTaskData._id; // Remove the _id property
+
+  const newTask = new Task(newTaskData);
+
+  try {
+    const savedTask = await newTask.save();
+    return savedTask;
+  } catch (error) {
+    // Handle any save errors here
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to clone the task');
+  }
+};
+
+/**
+ * Reorder a task and update the order of all other tasks accordingly.
+ * @param {mongoose.Types.ObjectId} taskId - The ID of the task you want to reorder.
+ * @param {number} newOrder - The new order value for the task.
+ * @returns {Promise<ITask | null>}
+ */
+export const reorderTask = async (taskId: mongoose.Types.ObjectId, newOrder: number): Promise<ITask | null> => {
+  try {
+    // Find the task by ID
+    const taskToReorder = await Task.findById(taskId);
+
+    if (!taskToReorder) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
+    }
+
+    const oldOrder = taskToReorder.order;
+
+    // Update the task's order field with the new value
+    taskToReorder.order = newOrder;
+
+    // Save the updated task
+    const updatedTask = await taskToReorder.save();
+
+    // Update the order of all other tasks
+    await Task.updateMany({ _id: { $ne: taskId }, order: { $gte: newOrder } }, { $inc: { order: 1 } });
+
+    // Decrease the order of tasks that were moved up
+    await Task.updateMany({ _id: { $ne: taskId }, order: { $lte: oldOrder } }, { $inc: { order: -1 } });
+
+    return updatedTask;
+  } catch (error) {
+    // Handle any errors that occur during the process
+    throw new ApiError(httpStatus.INTERNAL_SERVER_ERROR, 'Failed to reorder the task');
+  }
+};

@@ -12,8 +12,22 @@ export const createTask = catchAsync(async (req: Request, res: Response) => {
   res.status(httpStatus.CREATED).send(task);
 });
 
+
 export const getTasks = catchAsync(async (req: Request, res: Response) => {
-  const filter = pick(req.query, ['title']);
+  const filter = pick(req.query, [
+    'title',
+    'owner',
+    'priority',
+    'completed',
+    'hidden',
+    'archived',
+    'member',
+    'parentTask',
+    'subTask',
+    'tags',
+    'label',
+    'project',
+  ]);
   const options: IOptions = pick(req.query, ['sortBy', 'limit', 'page', 'search', 'populate']);
   const result = await taskService.queryTasks(filter, options);
   res.send(result);
@@ -46,4 +60,24 @@ export const archiveTask = catchAsync(async (req: Request, res: Response) => {
 export const updateTask = catchAsync(async (req: Request, res: Response) => {
   const task = await taskService.updateTaskById(req.body);
   res.send(task);
+});
+
+export const completeTask = catchAsync(async (req: Request, res: Response) => {
+  if (typeof req.params['id'] === 'string') {
+    const task = await taskService.completeTaskById(new mongoose.Types.ObjectId(req.params['id']), req.user.id);
+    res.send(task);
+  }
+});
+
+export const cloneTask = catchAsync(async (req: Request, res: Response) => {
+  if (typeof req.params['id'] === 'string') {
+    const task = await taskService.cloneTaskById(new mongoose.Types.ObjectId(req.params['id']));
+    res.send(task);
+  }
+});
+
+export const reorderTasks = catchAsync(async (req: Request, res: Response) => {
+  const { id, order } = req.query;
+  const tasks = await taskService.reorderTask(new mongoose.Types.ObjectId(id as string), parseInt(order as string, 10));
+  res.send(tasks);
 });

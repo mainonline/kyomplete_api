@@ -1,28 +1,6 @@
 const allRoles = {
-  admin: [
-    'getUsers',
-    'manageUsers',
-    'getOrders',
-    'manageOrders',
-    'manageComplexes',
-    'getComplexes',
-    'manageApartments',
-    'getApartments',
-    'getHistories',
-    'manageHistories',
-  ],
-  manager: [
-    'getUsers',
-    'manageUsers',
-    'getOrders',
-    'manageOrders',
-    'manageComplexes',
-    'getComplexes',
-    'manageApartments',
-    'getApartments',
-    'getHistories',
-    'manageHistories',
-  ],
+  admin: ['getUsers', 'manageUsers', 'getTasks', 'manageTasks'],
+  user: ['getUsers', 'manageUsers', 'getTasks', 'manageTasks'],
 };
 
 export const roles: string[] = Object.keys(allRoles);

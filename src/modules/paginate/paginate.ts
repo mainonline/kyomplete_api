@@ -48,30 +48,6 @@ const paginate = <T extends Document, U extends Model<U>>(schema: Schema<T>): vo
       sort = 'createdAt';
     }
 
-    // if (filter) {
-    //   // apply filters
-    //   const areaCond: any = [];
-    //
-    //   Object.entries(filter).forEach(([key, value]) => {
-    //     switch (key) {
-    //       case 'minArea':
-    //         areaCond.push({ area: { $gte: parseFloat(value) } });
-    //         delete filter[key];
-    //         break;
-    //       case 'maxArea':
-    //         areaCond.push({ area: { $lte: parseFloat(value) } });
-    //         delete filter[key];
-    //         break;
-    //       default:
-    //         filter[key] = { $regex: value, $options: 'i' };
-    //         break;
-    //     }
-    //   });
-    //
-    //   if (areaCond.length > 0) {
-    //     filter['$and'] = areaCond;
-    //   }
-    // }
     Object.entries(filter).forEach(([key, value]) => {
       // check value is number, if not apply regex
       if (typeof value === 'string' && !Number.isNaN(Number(value)) && key !== 'phone') {
@@ -95,26 +71,11 @@ const paginate = <T extends Document, U extends Model<U>>(schema: Schema<T>): vo
       const isSearchValueNumber = !Number.isNaN(Number(options.search));
       const searchQuery = {
         $or: [
-          { clientPhone: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
-          { clientName: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
           { title: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
-          { type: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
           { description: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
-          { address: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
           { name: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
           { phone: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
           { email: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
-          { role: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
-          { status: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
-          { block: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
-          { contractNumber: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
-          { number: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
-          // Perform exact match on numeric fields
-          { floor: isSearchValueNumber ? Number(options.search) : undefined },
-          { area: isSearchValueNumber ? Number(options.search) : undefined },
-          { rooms: isSearchValueNumber ? Number(options.search) : undefined },
-          { price: isSearchValueNumber ? Number(options.search) : undefined },
-          { previousStatus: isSearchValueNumber ? options.search : { $regex: options.search, $options: 'i' } },
         ],
       };
 

@@ -41,7 +41,7 @@ const userSchema = new mongoose.Schema<IUserDoc, IUserModel>(
     role: {
       type: String,
       enum: roles,
-      default: 'admin',
+      default: 'user',
     },
     phone: { type: String, default: null, required: false },
     image: {

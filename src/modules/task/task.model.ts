@@ -7,7 +7,7 @@ const taskSchema = new mongoose.Schema<ITask, ITaskModel>(
   {
     title: { type: String, unique: true, required: true },
     description: { type: String, default: '' },
-    banner: { _id: false, id: { type: String }, url: { type: String } },
+    cover: { _id: false, id: { type: String }, url: { type: String } },
     attachments: [{ _id: false, id: { type: String }, url: { type: String }, title: { type: String } }],
     dueDate: { type: Date, default: null },
     reminderDate: { type: Date, default: null },
@@ -38,17 +38,6 @@ taskSchema.static('isTitleTaken', async function (title: string, excludeTaskId: 
   return !!task;
 });
 
-/**
- * Check if login is taken
- * @param {number} order - The user's login
- * @param {ObjectId} [excludeTaskId] - The id of the user to be excluded
- * @returns {Promise<boolean>}
- */
-taskSchema.static('isOrderTaken', async function (order: number, excludeTaskId: mongoose.ObjectId): Promise<boolean> {
-  const task = await this.findOne({ order, _id: { $ne: excludeTaskId } });
-  return !!task;
-});
-
 async function setOrderMiddleware(this: ITaskDoc, next: (err?: any) => void) {
   if (this.isNew) {
     try {
@@ -67,7 +56,7 @@ async function setOrderMiddleware(this: ITaskDoc, next: (err?: any) => void) {
   next();
 }
 
-// Apply the middleware to the schema
+// apply setOrderMiddleware to 'save' and 'findOneAndUpdate' hooks
 taskSchema.pre('save', setOrderMiddleware);
 
 // add plugin that converts mongoose to json

@@ -43,12 +43,12 @@ export const getTasks = {
     completed: Joi.boolean(),
     hidden: Joi.boolean(),
     archived: Joi.boolean(),
-    member: Joi.array().items(Joi.string().custom(objectId)),
-    parentTask: Joi.array().items(Joi.string().custom(objectId)),
-    subTask: Joi.array().items(Joi.string().custom(objectId)),
-    tags: Joi.array().items(Joi.string().custom(objectId)),
-    label: Joi.array().items(Joi.string().custom(objectId)),
-    project: Joi.array().items(Joi.string().custom(objectId)),
+    members: Joi.string().allow(''),
+    parentTasks: Joi.string().allow(''),
+    subTasks: Joi.string().allow(''),
+    tags: Joi.string().allow(''),
+    labels: Joi.string().allow(''),
+    projects: Joi.string().allow(''),
   }),
 };
 

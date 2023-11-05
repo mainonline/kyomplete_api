@@ -12,7 +12,6 @@ export const createTask = catchAsync(async (req: Request, res: Response) => {
   res.status(httpStatus.CREATED).send(task);
 });
 
-
 export const getTasks = catchAsync(async (req: Request, res: Response) => {
   const filter = pick(req.query, [
     'title',
@@ -21,12 +20,12 @@ export const getTasks = catchAsync(async (req: Request, res: Response) => {
     'completed',
     'hidden',
     'archived',
-    'member',
-    'parentTask',
-    'subTask',
+    'members',
+    'parentTasks',
+    'subTasks',
     'tags',
-    'label',
-    'project',
+    'labels',
+    'projects',
   ]);
   const options: IOptions = pick(req.query, ['sortBy', 'limit', 'page', 'search', 'populate']);
   const result = await taskService.queryTasks(filter, options);

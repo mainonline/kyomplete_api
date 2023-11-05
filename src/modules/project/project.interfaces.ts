@@ -5,7 +5,6 @@ export interface IProject {
   name: string;
   description: string;
   members: mongoose.Types.ObjectId[];
-  tasks: mongoose.Types.ObjectId[];
   archived: boolean;
   user: mongoose.Types.ObjectId;
 }

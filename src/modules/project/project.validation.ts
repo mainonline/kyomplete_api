@@ -5,7 +5,6 @@ export const createProject = Joi.object({
   name: Joi.string().required(),
   description: Joi.string().allow(''),
   members: Joi.array().items(Joi.string().custom(objectId)),
-  tasks: Joi.array().items(Joi.string().custom(objectId)),
   archived: Joi.boolean(),
   user: Joi.string().custom(objectId),
 });
@@ -41,7 +40,6 @@ export const updateProject = {
     name: Joi.string().required(),
     description: Joi.string().allow(''),
     members: Joi.array().items(Joi.string().custom(objectId)),
-    tasks: Joi.array().items(Joi.string().custom(objectId)),
     archived: Joi.boolean(),
     user: Joi.string().custom(objectId),
   }),

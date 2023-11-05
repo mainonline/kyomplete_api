@@ -57,7 +57,26 @@ const paginate = <T extends Document, U extends Model<U>>(schema: Schema<T>): vo
       } else if (typeof value === 'string') {
         filter[key] = { $regex: value, $options: 'i' };
       }
+
+      // return only tasks that are in that project or label
+      if (
+        key === 'projects' ||
+        key === 'labels' ||
+        key === 'tags' ||
+        key === 'members' ||
+        key === 'parentTasks' ||
+        key === 'subTasks'
+      ) {
+        const projectIds: mongoose.Types.ObjectId[] = [];
+        value.split(',').forEach((projectId: string) => {
+          projectIds.push(new mongoose.Types.ObjectId(projectId));
+        });
+
+        filter[key] = { $in: projectIds };
+      }
     });
+
+    console.log('filter', filter);
 
     const limit = options.limit && parseInt(options.limit.toString(), 10) > 0 ? parseInt(options.limit.toString(), 10) : 10;
     const page = options.page && parseInt(options.page.toString(), 10) > 0 ? parseInt(options.page.toString(), 10) : 1;

@@ -111,7 +111,12 @@ export const updateTaskById = async (
     throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
   }
 
-  return task.updateOne(taskBody);
+  Object.assign(task, taskBody);
+  if (taskBody.completed) {
+    task.status = 'done';
+  }
+  await task.save();
+  return task;
 };
 
 /**
@@ -135,7 +140,7 @@ export const completeTaskById = async (
     throw new ApiError(httpStatus.BAD_REQUEST, "You don't have permission to complete this task");
   }
 
-  await task.updateOne({ completed: true });
+  await task.updateOne({ completed: true, status: 'done' });
   await task.save();
   return task;
 };
@@ -169,32 +174,31 @@ export const cloneTaskById = async (id: mongoose.Types.ObjectId): Promise<ITask 
 
 /**
  * Reorder a task and update the order of all other tasks accordingly.
- * @param {mongoose.Types.ObjectId} taskId - The ID of the task you want to reorder.
+ * @param {number} currentOrder - The current order value for the task.
  * @param {number} newOrder - The new order value for the task.
  * @returns {Promise<ITask | null>}
  */
-export const reorderTask = async (taskId: mongoose.Types.ObjectId, newOrder: number): Promise<ITask | null> => {
+export const reorderTask = async (currentOrder: number, newOrder: number): Promise<ITask | null> => {
   try {
     // Find the task by ID
-    const taskToReorder = await Task.findById(taskId);
+    const taskToReorder = await Task.findOne({ order: currentOrder });
+    const taskToToggle = await Task.findOne({ order: newOrder });
 
     if (!taskToReorder) {
       throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
     }
 
-    const oldOrder = taskToReorder.order;
+    if (!taskToToggle) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Task not found');
+    }
 
     // Update the task's order field with the new value
     taskToReorder.order = newOrder;
+    taskToToggle.order = currentOrder;
 
     // Save the updated task
     const updatedTask = await taskToReorder.save();
-
-    // Update the order of all other tasks
-    await Task.updateMany({ _id: { $ne: taskId }, order: { $gte: newOrder } }, { $inc: { order: 1 } });
-
-    // Decrease the order of tasks that were moved up
-    await Task.updateMany({ _id: { $ne: taskId }, order: { $lte: oldOrder } }, { $inc: { order: -1 } });
+    await taskToToggle.save();
 
     return updatedTask;
   } catch (error) {

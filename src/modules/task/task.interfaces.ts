@@ -23,6 +23,7 @@ export interface ITask {
   completed: boolean;
   hidden: boolean;
   archived: boolean;
+  status: string;
   order: number;
   user: mongoose.Types.ObjectId;
   members: mongoose.Types.ObjectId[];

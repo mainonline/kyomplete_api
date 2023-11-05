@@ -5,22 +5,26 @@ export const createTask = Joi.object({
   title: Joi.string().required(),
   description: Joi.string().allow(''),
   banner: Joi.object().keys({
-    id: Joi.string(),
-    url: Joi.string(),
+    id: Joi.string().allow('', null),
+    url: Joi.string().allow('', null),
   }),
   attachments: Joi.array().items(
     Joi.object().keys({
-      id: Joi.string(),
-      url: Joi.string(),
+      id: Joi.string().allow('', null),
+      url: Joi.string().allow('', null),
       title: Joi.string(),
     })
   ),
-  dueDate: Joi.date(),
-  reminderDate: Joi.date(),
+  dueDate: Joi.date().allow('', null),
+  reminderDate: Joi.date().allow('', null),
   priority: Joi.string().allow(''),
   completed: Joi.boolean(),
   hidden: Joi.boolean(),
   archived: Joi.boolean(),
+  cover: Joi.object().keys({
+    id: Joi.string().allow('', null),
+    url: Joi.string().allow('', null),
+  }),
   owner: Joi.string().custom(objectId),
   members: Joi.array().items(Joi.string().custom(objectId)),
   parentTasks: Joi.array().items(Joi.string().custom(objectId)),
@@ -38,7 +42,7 @@ export const getTasks = {
     limit: Joi.number().integer(),
     page: Joi.number().integer(),
     populate: Joi.string().allow(''),
-    owner: Joi.string().custom(objectId),
+    user: Joi.string().custom(objectId),
     priority: Joi.string().allow(''),
     completed: Joi.boolean(),
     hidden: Joi.boolean(),
@@ -66,34 +70,36 @@ export const deleteTask = {
 
 export const reorderTasks = {
   query: Joi.object().keys({
-    id: Joi.string().custom(objectId),
-    order: Joi.number().integer(),
+    currentOrder: Joi.number().integer(),
+    newOrder: Joi.number().integer(),
   }),
 };
 
 export const updateTask = {
   body: Joi.object().keys({
     id: Joi.string().custom(objectId),
-    title: Joi.string().required(),
+    title: Joi.string(),
     description: Joi.string().allow(''),
-    banner: Joi.object().keys({
-      id: Joi.string(),
-      url: Joi.string(),
-    }),
     attachments: Joi.array().items(
       Joi.object().keys({
-        id: Joi.string(),
-        url: Joi.string(),
+        id: Joi.string().allow('', null),
+        url: Joi.string().allow('', null),
         title: Joi.string(),
       })
     ),
-    dueDate: Joi.date(),
-    reminderDate: Joi.date(),
+    dueDate: Joi.date().allow('', null),
+    status: Joi.string().allow(''),
+    reminderDate: Joi.date().allow('', null),
     priority: Joi.string().allow(''),
     completed: Joi.boolean(),
+    order: Joi.number().integer(),
     hidden: Joi.boolean(),
     archived: Joi.boolean(),
-    owner: Joi.string().custom(objectId),
+    cover: Joi.object().keys({
+      id: Joi.string().allow('', null),
+      url: Joi.string().allow('', null),
+    }),
+    user: Joi.string().custom(objectId),
     members: Joi.array().items(Joi.string().custom(objectId)),
     parentTasks: Joi.array().items(Joi.string().custom(objectId)),
     subTasks: Joi.array().items(Joi.string().custom(objectId)),

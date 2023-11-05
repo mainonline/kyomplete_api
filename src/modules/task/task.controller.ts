@@ -15,7 +15,6 @@ export const createTask = catchAsync(async (req: Request, res: Response) => {
 export const getTasks = catchAsync(async (req: Request, res: Response) => {
   const filter = pick(req.query, [
     'title',
-    'owner',
     'priority',
     'completed',
     'hidden',
@@ -24,6 +23,7 @@ export const getTasks = catchAsync(async (req: Request, res: Response) => {
     'parentTasks',
     'subTasks',
     'tags',
+    'user',
     'labels',
     'projects',
   ]);
@@ -76,7 +76,7 @@ export const cloneTask = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const reorderTasks = catchAsync(async (req: Request, res: Response) => {
-  const { id, order } = req.query;
-  const tasks = await taskService.reorderTask(new mongoose.Types.ObjectId(id as string), parseInt(order as string, 10));
+  const { currentOrder, newOrder } = req.query;
+  const tasks = await taskService.reorderTask(parseInt(currentOrder as string, 10), parseInt(newOrder as string, 10));
   res.send(tasks);
 });
